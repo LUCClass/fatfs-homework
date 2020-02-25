@@ -13,6 +13,7 @@ SDIR = src
 OBJS = \
 	boot.o \
 	ide.o \
+	main.o \
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 
@@ -59,15 +60,12 @@ img: rootfs.img
 	rm -f disk.img
 #	test -s rootfs.img || { dd if=/dev/zero of=rootfs.img bs=1024 count=64k; mkfs.fat -F12 rootfs.img; } # Make rootfs image
 	dd if=/dev/zero of=disk.img count=131072 bs=512 # Make big disk image (64MB) filled with zeros
-	dd if=../mbr/mbr.img of=disk.img conv=notrunc # Copy MBR to disk img, not truncating original file.
-	# Appends stage1.bin to the end of disk image, starting one 512-byte sector after the beginning of the file.
-	dd if=../stage1/stage1.bin of=disk.img seek=1 conv=notrunc
 	# Copies rootfs image to the first partition
 	dd if=rootfs.img of=disk.img seek=2048 conv=notrunc
 	# Repartition the disk to occupy the whole image
 	./partition.sh disk.img
 	# Create a loopback device at offset 1M in the disk.img. This is the start of the partition we created
-	sudo losetup -d $(LOOPDEV)
+	sudo losetup -d $(LOOPDEV) || { echo "loop device not created"; }
 	sudo losetup $(LOOPDEV) disk.img -o 1048576
 	# Mount the loopback device
 	sudo mount $(LOOPDEV) /mnt/disk

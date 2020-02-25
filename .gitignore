@@ -2,3 +2,5 @@
 *.swp
 kernel
 obj/*
+disk.img
+rootfs.img
