@@ -14,6 +14,7 @@ OBJS = \
 	boot.o \
 	ide.o \
 	main.o \
+	rprintf.o \
 
 OBJ = $(patsubst %,$(ODIR)/%,$(OBJS))
 
@@ -51,7 +52,7 @@ disassemble:
 
 rootfs.img:
 	dd if=/dev/zero of=rootfs.img bs=1M count=16
-	mkfs.fat -F12 rootfs.img
+	mkfs.fat -F16 rootfs.img
 	sudo mount rootfs.img /mnt/disk
 	sudo mkdir -p /mnt/disk/boot/grub
 	sudo umount /mnt/disk
